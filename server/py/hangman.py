@@ -3,6 +3,7 @@ import random
 from enum import Enum
 from server.py.game import Game, Player
 
+# ASCII art for the hangman stages
 HANGMAN_PICS = [
     '''
      +---+
@@ -53,7 +54,7 @@ class GuessLetterAction:
     def __init__(self, letter: str) -> None:
         if len(letter) != 1 or not letter.isalpha():
             raise ValueError("A guess must be a single alphabetic character.")
-        self.letter = letter.upper()  # Store in uppercase for consistency
+        self.letter = letter.upper()  # Ensure the letter is stored in uppercase
 
     def __repr__(self) -> str:
         return f"GuessLetterAction(letter='{self.letter}')"
@@ -68,12 +69,13 @@ class GamePhase(str, Enum):
 class HangmanGameState:
 
     def __init__(self, word_to_guess: str, phase: GamePhase, guesses: List[str], incorrect_guesses: List[str]) -> None:
-        self.word_to_guess = word_to_guess.upper()  # Normalize to uppercase
+        self.word_to_guess = word_to_guess.upper()  # Ensure word is uppercase
         self.phase = phase
         self.guesses = guesses
         self.incorrect_guesses = incorrect_guesses
 
-    def display_state(self) -> None:
+    def display_state(self):
+        """ Display the current game state (word, incorrect guesses, Hangman art) """
         word_display = ''.join([letter if letter in self.guesses else '_' for letter in self.word_to_guess])
         print(f"Word: {word_display}")
         print(f"Incorrect guesses: {', '.join(self.incorrect_guesses)}")
@@ -108,7 +110,7 @@ class Hangman(Game):
         if letter in self.state.word_to_guess:
             if letter not in self.state.guesses:
                 self.state.guesses.append(letter)
-            if all(l in self.state.guesses for l in self.state.word_to_guess):
+            if all(letter in self.state.guesses for letter in self.state.word_to_guess):
                 self.state.phase = GamePhase.FINISHED
         else:
             if letter not in self.state.incorrect_guesses:
